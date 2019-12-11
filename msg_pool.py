@@ -10,13 +10,22 @@ def get_center_msg():
             thumbnail_image_url='https://swordshield.portal-pokemon.com/tc/pokemon/img/pokemon-image_v10_1-1.png',
             actions=[
                 MessageTemplateAction(
-                    label='自訂計時',
+                    label='新增計時',
                     text='開啟自訂計時'
+                ),
+                MessageTemplateAction(
+                    label='以地點新增計時',
+                    text='以地點新增計時'
                 ),
                 MessageTemplateAction(
                     label='查看目前計時器',
                     text='查看目前計時器'
+                ),
+                MessageTemplateAction(
+                    label='不要偷看啦',
+                    text='還是要偷看'
                 )
+                
             ]
         )
     )
@@ -131,10 +140,30 @@ def get_set_number_msg(number):
 def get_book_msg(dataArray):
     card=[]
     i=1
+    card.append(
+                CarouselColumn(
+                title= "往左滑動即可察看目前的號碼牌",
+                text='.',
+                actions=[
+                    MessageTemplateAction(
+                        label='返回',
+                        text='返回'
+                    ),MessageTemplateAction(
+                        label='返回',
+                        text='返回'
+                    ),MessageTemplateAction(
+                        label='返回',
+                        text='返回'
+                    )
+                ]
+            )
+
+        )
     for data in dataArray:
         start=data['clock']['start']
         period=data['clock']['time']
         number=data['number']
+        print(str(data))
         if data['name']!=None:
             name=data['name']
         else:
@@ -152,9 +181,14 @@ def get_book_msg(dataArray):
                         data=i-1
                     ),
                     PostbackTemplateAction(
-                        label='返回',
-                        text='返回',
-                        data='back'
+                        label='修改號碼牌內容',
+                        text='修改號碼牌內容',
+                        data=i-1
+                    ),
+                    PostbackTemplateAction(
+                        label='輸入位置資訊',
+                        text='輸入位置資訊',
+                        data=i-1
                     ),
                 ]
             )
@@ -167,3 +201,36 @@ def get_book_msg(dataArray):
         template=CarouselTemplate(columns=card)
     )
     return Carousel_template
+
+def get_locationCenter_msg(spotName,locationInfo):
+    if spotName!=None:
+        name=spotName
+    else:
+        name="尚未設定"
+    if locationInfo!=None:
+        info=locationInfo['address']+" (經度"+str(locationInfo['latitude'])+", 緯度"+str(locationInfo['longitude'])+")"
+    else:
+        info="尚未設定"
+
+    timeTemplate=TemplateSendMessage(
+        alt_text=' 設定地點',
+        template=ButtonsTemplate(
+            title= "地點： "+name,
+            text="地理資訊: "+str(info),
+            actions=[
+                MessageTemplateAction(
+                    label='輸入地點名稱',
+                    text='輸入地點名稱'
+                ),
+                MessageTemplateAction(
+                    label='回傳地理資訊',
+                    text='回傳地理資訊'
+                ),
+                MessageTemplateAction(
+                    label='返回',
+                    text='返回'
+                )
+            ]
+        )
+    )
+    return timeTemplate
